@@ -90,6 +90,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		private IntPtr[] sortedSpriteInfos; // SpriteInfo*[]
 		private VertexPositionColorTexture4[] vertexInfo;
 		private Texture2D[] textureInfo;
+		private int currentBufferPosition;
 
 		// Default SpriteBatch Effect
 		private Effect spriteEffect;
@@ -171,6 +172,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			beginCalled = false;
 			numSprites = 0;
+			currentBufferPosition = 0;
 		}
 
 		#endregion
@@ -1066,6 +1068,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			if (sortMode == SpriteSortMode.Immediate)
 			{
+				int start;
 				fixed (VertexPositionColorTexture4* sprite = &vertexInfo[0])
 				{
 					GenerateVertexInfo(
@@ -1086,23 +1089,12 @@ namespace Microsoft.Xna.Framework.Graphics
 						depth,
 						effects
 					);
-
-					/* We do NOT use Discard here because
-					 * it would be stupid to reallocate the
-					 * whole buffer just for one sprite.
-					 *
-					 * Unless you're using this to blit a
-					 * target, stop using Immediate ya donut
-					 * -flibit
-					 */
-					vertexBuffer.SetDataPointerEXT(
-						0,
+					start = UpdateVertexBuffer(
 						(IntPtr) sprite,
-						VertexPositionColorTexture4.RealStride,
-						SetDataOptions.None
+						1
 					);
 				}
-				DrawPrimitives(texture, 0, 1);
+				DrawPrimitives(texture, start, 1);
 			}
 			else if (sortMode == SpriteSortMode.Deferred)
 			{
@@ -1160,6 +1152,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 		private unsafe void FlushBatch()
 		{
+			int start;
 			int offset = 0;
 			Texture2D curTexture = null;
 
@@ -1228,20 +1221,9 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			fixed (VertexPositionColorTexture4* p = &vertexInfo[0])
 			{
-				/* We use Discard here because the last batch
-				 * may still be executing, and we can't always
-				 * trust the driver to use a staging buffer for
-				 * buffer uploads that overlap between commands.
-				 *
-				 * If you aren't using the whole vertex buffer,
-				 * that's your own fault. Use the whole buffer!
-				 * -flibit
-				 */
-				vertexBuffer.SetDataPointerEXT(
-					0,
+				start = UpdateVertexBuffer(
 					(IntPtr) p,
-					numSprites * VertexPositionColorTexture4.RealStride,
-					SetDataOptions.Discard
+					numSprites
 				);
 			}
 
@@ -1250,14 +1232,51 @@ namespace Microsoft.Xna.Framework.Graphics
 			{
 				if (textureInfo[i] != curTexture)
 				{
-					DrawPrimitives(curTexture, offset, i - offset);
+					DrawPrimitives(
+						curTexture,
+						start + offset,
+						i - offset
+					);
 					curTexture = textureInfo[i];
-					offset = i;
+					offset = start + i;
 				}
 			}
-			DrawPrimitives(curTexture, offset, numSprites - offset);
+			DrawPrimitives(
+				curTexture,
+				start + offset,
+				numSprites - offset
+			);
 
 			numSprites = 0;
+		}
+
+		/* Taken from Shawn Hargreaves blog:
+		 * https://www.shawnhargreaves.com/blog/setdataoptions-nooverwrite-versus-discard.html
+		 */
+		private unsafe int UpdateVertexBuffer(IntPtr p, int len)
+		{
+			// Append to the existing buffer.
+			int pos = currentBufferPosition;
+			SetDataOptions hint = SetDataOptions.NoOverwrite;
+
+			/* If we reached the end, wrap back to the beginning and
+			 * Discard the existing buffer contents.
+			 */
+			if (pos + len > MAX_SPRITES)
+			{
+				pos = 0;
+				hint = SetDataOptions.Discard;
+			}
+
+			// Write the new data into the buffer.
+			vertexBuffer.SetDataPointerEXT(
+				pos * VertexPositionColorTexture4.RealStride,
+				p,
+				len * VertexPositionColorTexture4.RealStride,
+				hint
+			);
+			currentBufferPosition = pos + len;
+			return pos;
 		}
 
 		private static unsafe void GenerateVertexInfo(

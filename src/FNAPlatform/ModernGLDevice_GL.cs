@@ -175,6 +175,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			GL_ELEMENT_ARRAY_BUFFER =		0x8893,
 			GL_STREAM_DRAW =			0x88E0,
 			GL_STATIC_DRAW =			0x88E4,
+			GL_MAP_WRITE_BIT =			0x0002,
+			GL_MAP_UNSYNCHRONIZED_BIT =		0x0020,
 			GL_MAX_VERTEX_ATTRIBS =			0x8869,
 			// Render targets
 			GL_FRAMEBUFFER =			0x8D40,
@@ -605,6 +607,19 @@ namespace Microsoft.Xna.Framework.Graphics
 			IntPtr data
 		);
 		private GetNamedBufferSubData glGetNamedBufferSubData;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		private delegate IntPtr MapNamedBufferRange(
+			uint buffer,
+			IntPtr offset,
+			IntPtr length,
+			GLenum access
+		);
+		private MapNamedBufferRange glMapNamedBufferRange;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		private delegate byte UnmapNamedBuffer(uint buffer);
+		private UnmapNamedBuffer glUnmapNamedBuffer;
 
 		/* END BUFFER FUNCTIONS */
 
@@ -1151,6 +1166,14 @@ namespace Microsoft.Xna.Framework.Graphics
 				glGetNamedBufferSubData = (GetNamedBufferSubData) Marshal.GetDelegateForFunctionPointer(
 					SDL.SDL_GL_GetProcAddress("glGetNamedBufferSubData"),
 					typeof(GetNamedBufferSubData)
+				);
+				glMapNamedBufferRange = (MapNamedBufferRange) Marshal.GetDelegateForFunctionPointer(
+					SDL.SDL_GL_GetProcAddress("glMapNamedBufferRange"),
+					typeof(MapNamedBufferRange)
+				);
+				glUnmapNamedBuffer = (UnmapNamedBuffer) Marshal.GetDelegateForFunctionPointer(
+					SDL.SDL_GL_GetProcAddress("glUnmapNamedBuffer"),
+					typeof(UnmapNamedBuffer)
 				);
 				glClearColor = (ClearColor) Marshal.GetDelegateForFunctionPointer(
 					SDL.SDL_GL_GetProcAddress("glClearColor"),

@@ -174,6 +174,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			GL_ELEMENT_ARRAY_BUFFER =		0x8893,
 			GL_STREAM_DRAW =			0x88E0,
 			GL_STATIC_DRAW =			0x88E4,
+			GL_MAP_WRITE_BIT =			0x0002,
+			GL_MAP_UNSYNCHRONIZED_BIT =		0x0020,
 			GL_MAX_VERTEX_ATTRIBS =			0x8869,
 			// Render targets
 			GL_FRAMEBUFFER =			0x8D40,
@@ -595,6 +597,19 @@ namespace Microsoft.Xna.Framework.Graphics
 			IntPtr data
 		);
 		private GetBufferSubData glGetBufferSubData;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		private delegate IntPtr MapBufferRange(
+			GLenum target,
+			IntPtr offset,
+			IntPtr length,
+			GLenum access
+		);
+		private MapBufferRange glMapBufferRange;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		private delegate byte UnmapBuffer(GLenum target);
+		private UnmapBuffer glUnmapBuffer;
 
 		/* END BUFFER FUNCTIONS */
 
@@ -1139,6 +1154,14 @@ namespace Microsoft.Xna.Framework.Graphics
 				glBufferSubData = (BufferSubData) GetProcAddress(
 					"glBufferSubData",
 					typeof(BufferSubData)
+				);
+				glMapBufferRange = (MapBufferRange) GetProcAddressEXT(
+					"glMapBufferRange",
+					typeof(MapBufferRange)
+				);
+				glUnmapBuffer = (UnmapBuffer) GetProcAddress(
+					"glUnmapBuffer",
+					typeof(UnmapBuffer)
 				);
 				glClearColor = (ClearColor) GetProcAddress(
 					"glClearColor",

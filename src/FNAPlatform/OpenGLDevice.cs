@@ -2401,22 +2401,39 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			BindVertexBuffer(buffer);
 
-			if (options == SetDataOptions.Discard)
+			if (options == SetDataOptions.NoOverwrite)
 			{
-				glBufferData(
+				IntPtr ptr = glMapBufferRange(
 					GLenum.GL_ARRAY_BUFFER,
-					buffer.BufferSize,
-					IntPtr.Zero,
-					(buffer as OpenGLBuffer).Dynamic
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					(
+						GLenum.GL_MAP_WRITE_BIT |
+						GLenum.GL_MAP_UNSYNCHRONIZED_BIT
+					)
+				);
+				memcpy(ptr, data, (IntPtr) dataLength);
+				glUnmapBuffer(GLenum.GL_ARRAY_BUFFER);
+			}
+			else
+			{
+				if (options == SetDataOptions.Discard)
+				{
+					glBufferData(
+						GLenum.GL_ARRAY_BUFFER,
+						buffer.BufferSize,
+						IntPtr.Zero,
+						(buffer as OpenGLBuffer).Dynamic
+					);
+				}
+
+				glBufferSubData(
+					GLenum.GL_ARRAY_BUFFER,
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					data
 				);
 			}
-
-			glBufferSubData(
-				GLenum.GL_ARRAY_BUFFER,
-				(IntPtr) offsetInBytes,
-				(IntPtr) dataLength,
-				data
-			);
 
 #if !DISABLE_THREADING
 			});
@@ -2436,22 +2453,39 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			BindIndexBuffer(buffer);
 
-			if (options == SetDataOptions.Discard)
+			if (options == SetDataOptions.NoOverwrite)
 			{
-				glBufferData(
+				IntPtr ptr = glMapBufferRange(
 					GLenum.GL_ELEMENT_ARRAY_BUFFER,
-					buffer.BufferSize,
-					IntPtr.Zero,
-					(buffer as OpenGLBuffer).Dynamic
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					(
+						GLenum.GL_MAP_WRITE_BIT |
+						GLenum.GL_MAP_UNSYNCHRONIZED_BIT
+					)
+				);
+				memcpy(ptr, data, (IntPtr) dataLength);
+				glUnmapBuffer(GLenum.GL_ELEMENT_ARRAY_BUFFER);
+			}
+			else
+			{
+				if (options == SetDataOptions.Discard)
+				{
+					glBufferData(
+						GLenum.GL_ELEMENT_ARRAY_BUFFER,
+						buffer.BufferSize,
+						IntPtr.Zero,
+						(buffer as OpenGLBuffer).Dynamic
+					);
+				}
+
+				glBufferSubData(
+					GLenum.GL_ELEMENT_ARRAY_BUFFER,
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					data
 				);
 			}
-
-			glBufferSubData(
-				GLenum.GL_ELEMENT_ARRAY_BUFFER,
-				(IntPtr) offsetInBytes,
-				(IntPtr) dataLength,
-				data
-			);
 
 #if !DISABLE_THREADING
 			});

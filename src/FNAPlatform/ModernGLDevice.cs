@@ -2295,22 +2295,39 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
 			uint handle = (buffer as OpenGLBuffer).Handle;
 
-			if (options == SetDataOptions.Discard)
+			if (options == SetDataOptions.NoOverwrite)
 			{
-				glNamedBufferData(
+				IntPtr ptr = glMapNamedBufferRange(
 					handle,
-					buffer.BufferSize,
-					IntPtr.Zero,
-					(buffer as OpenGLBuffer).Dynamic
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					(
+						GLenum.GL_MAP_WRITE_BIT |
+						GLenum.GL_MAP_UNSYNCHRONIZED_BIT
+					)
+				);
+				memcpy(ptr, data, (IntPtr) dataLength);
+				glUnmapNamedBuffer(handle);
+			}
+			else
+			{
+				if (options == SetDataOptions.Discard)
+				{
+					glNamedBufferData(
+						handle,
+						buffer.BufferSize,
+						IntPtr.Zero,
+						(buffer as OpenGLBuffer).Dynamic
+					);
+				}
+
+				glNamedBufferSubData(
+					handle,
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					data
 				);
 			}
-
-			glNamedBufferSubData(
-				handle,
-				(IntPtr) offsetInBytes,
-				(IntPtr) dataLength,
-				data
-			);
 
 #if !DISABLE_THREADING
 			});
@@ -2330,22 +2347,39 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			uint handle = (buffer as OpenGLBuffer).Handle;
 
-			if (options == SetDataOptions.Discard)
+			if (options == SetDataOptions.NoOverwrite)
 			{
-				glNamedBufferData(
+				IntPtr ptr = glMapNamedBufferRange(
 					handle,
-					buffer.BufferSize,
-					IntPtr.Zero,
-					(buffer as OpenGLBuffer).Dynamic
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					(
+						GLenum.GL_MAP_WRITE_BIT |
+						GLenum.GL_MAP_UNSYNCHRONIZED_BIT
+					)
+				);
+				memcpy(ptr, data, (IntPtr) dataLength);
+				glUnmapNamedBuffer(handle);
+			}
+			else
+			{
+				if (options == SetDataOptions.Discard)
+				{
+					glNamedBufferData(
+						handle,
+						buffer.BufferSize,
+						IntPtr.Zero,
+						(buffer as OpenGLBuffer).Dynamic
+					);
+				}
+
+				glNamedBufferSubData(
+					handle,
+					(IntPtr) offsetInBytes,
+					(IntPtr) dataLength,
+					data
 				);
 			}
-
-			glNamedBufferSubData(
-				handle,
-				(IntPtr) offsetInBytes,
-				(IntPtr) dataLength,
-				data
-			);
 
 #if !DISABLE_THREADING
 			});

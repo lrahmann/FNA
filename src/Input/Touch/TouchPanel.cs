@@ -61,10 +61,21 @@ namespace Microsoft.Xna.Framework.Input.Touch
 			}
 		}
 
+		private static IntPtr INTERNAL_windowHandle;
 		public static IntPtr WindowHandle
 		{
-			get;
-			set;
+			get
+			{
+				return INTERNAL_windowHandle;
+			}
+			set
+			{
+				// Wine change! Ignore handles that aren't SDL windows
+				if (SDL2.SDL.SDL_GetWindowID(value) != 0)
+				{
+					INTERNAL_windowHandle = value;
+				}
+			}
 		}
 
 		#endregion

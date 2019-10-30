@@ -58,8 +58,17 @@ namespace Microsoft.Xna.Framework
 
 		public override IntPtr Handle
 		{
+			// Wine change!
+			[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
 			get
 			{
+				// Wine change!
+				if (!System.Reflection.Assembly.GetCallingAssembly().GetName().Name.Equals("FNA"))
+				{
+					SDL2.SDL.SDL_SysWMinfo info = new SDL2.SDL.SDL_SysWMinfo();
+					SDL2.SDL.SDL_GetWindowWMInfo(window, ref info);
+					return info.info.win.window;
+				}
 				return window;
 			}
 		}

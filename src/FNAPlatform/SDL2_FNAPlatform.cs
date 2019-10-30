@@ -48,6 +48,59 @@ namespace Microsoft.Xna.Framework
 		/* This is needed for asynchronous window events */
 		private static List<Game> activeGames = new List<Game>();
 
+		// Wine change!
+		class HackForm : System.Windows.Forms.Form
+		{
+			public bool IsClosed;
+
+			private readonly IntPtr sdlHandle;
+
+			public HackForm(IntPtr window) : base()
+			{
+				IsClosed = false;
+				sdlHandle = window;
+				FormClosed += OnFormClosed;
+				CreateHandle();
+			}
+
+			private void OnFormClosed(object sender, EventArgs e)
+			{
+				IsClosed = true;
+			}
+
+			protected override void CreateHandle()
+			{
+				FieldInfo winField = typeof(System.Windows.Forms.Control).GetField(
+					"_window",
+					BindingFlags.Instance | BindingFlags.NonPublic
+				);
+				if (winField == null)
+				{
+					winField = typeof(System.Windows.Forms.Control).GetField(
+						"window",
+						BindingFlags.Instance | BindingFlags.NonPublic
+					);
+				}
+				System.Windows.Forms.NativeWindow internalWindow =
+					(System.Windows.Forms.NativeWindow) winField.GetValue(this);
+
+				SDL.SDL_SysWMinfo info = new SDL.SDL_SysWMinfo();
+				SDL.SDL_GetWindowWMInfo(sdlHandle, ref info);
+				internalWindow.AssignHandle(info.info.win.window);
+
+				// This throws an Exception internally and skips an UpdateReflectParent call!
+				try
+				{
+					base.CreateHandle();
+				}
+				catch(Exception e)
+				{
+					FNALoggerEXT.LogWarn(e.ToString());
+				}
+			}
+		}
+		private static Dictionary<IntPtr, HackForm> forms = new Dictionary<IntPtr, HackForm>();
+
 		#endregion
 
 		#region Init/Exit Methods
@@ -353,6 +406,11 @@ namespace Microsoft.Xna.Framework
 				GraphicsDeviceManager.DefaultBackBufferHeight,
 				initFlags
 			);
+
+			// Wine change!
+			HackForm form = new HackForm(window);
+			forms.Add(window, form);
+
 			if (window == IntPtr.Zero)
 			{
 				/* If this happens, the GL attributes were
@@ -448,6 +506,9 @@ namespace Microsoft.Xna.Framework
 			}
 
 			SDL.SDL_DestroyWindow(window.Handle);
+
+			// Wine change!
+			forms.Remove(window.Handle);
 		}
 
 		public static void ApplyWindowChanges(
@@ -1123,6 +1184,12 @@ namespace Microsoft.Xna.Framework
 
 				Keyboard.SetKeys(keys);
 				game.Tick();
+
+				// Wine change!
+				if (forms[game.Window.Handle].IsClosed)
+				{
+					game.RunApplication = false;
+				}
 			}
 
 			// Okay, we don't care about the events anymore
@@ -1262,6 +1329,16 @@ namespace Microsoft.Xna.Framework
 		public static void OnIsMouseVisibleChanged(bool visible)
 		{
 			SDL.SDL_ShowCursor(visible ? 1 : 0);
+
+			// Wine change!
+			if (visible)
+			{
+				System.Windows.Forms.Cursor.Show();
+			}
+			else
+			{
+				System.Windows.Forms.Cursor.Hide();
+			}
 		}
 
 		public static bool GetRelativeMouseMode()

@@ -345,7 +345,7 @@ RES = \
 debug: clean-debug
 	mkdir -p bin/Debug
 	cp app.config bin/Debug/FNA.dll.config
-	mcs /unsafe -debug -define:DEBUG -out:bin/Debug/FNA.dll -target:library $(SRC) $(RES)
+	mcs /unsafe -debug -define:DEBUG -out:bin/Debug/FNA.dll -target:library $(SRC) $(RES) -r:System.Windows.Forms
 
 clean-debug:
 	rm -rf bin/Debug

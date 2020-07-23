@@ -3477,6 +3477,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			int subW,
 			int subH
 		) {
+            return false;
 			bool texUnbound = (	currentDrawBuffers != 1 ||
 						currentAttachments[0] != (texture as OpenGLTexture).Handle	);
 			if (texUnbound && !useES3)

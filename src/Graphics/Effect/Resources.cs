@@ -89,24 +89,37 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 		}
 
-		/* This Effect is used by the Xiph VideoPlayer. */
-		public static byte[] YUVToRGBAEffect
-		{
-			get
-			{
-				if (yuvToRGBAEffect == null)
-				{
-					yuvToRGBAEffect = GetResource("YUVToRGBAEffect");
-				}
-				return yuvToRGBAEffect;
-			}
-		}
+        /* This Effect is used by the Xiph VideoPlayer. */
+        public static byte[] YUVToRGBAEffect
+        {
+            get
+            {
+                if (yuvToRGBAEffect == null)
+                {
+                    yuvToRGBAEffect = GetResource("YUVToRGBAEffect");
+                }
+                return yuvToRGBAEffect;
+            }
+        }
+        /* This Effect is used by the Xiph VideoPlayer. */
+        public static byte[] NV12ToRGBAEffect
+        {
+            get
+            {
+                if (yuvToRGBAEffect == null)
+                {
+                    yuvToRGBAEffect = GetResource("NV12ToRGBAEffect");
+                }
+                return yuvToRGBAEffect;
+            }
+        }
 
-		#endregion
 
-		#region Private Static Variables
+        #endregion
 
-		private static byte[] alphaTestEffect;
+        #region Private Static Variables
+
+        private static byte[] alphaTestEffect;
 		private static byte[] basicEffect;
 		private static byte[] dualTextureEffect;
 		private static byte[] environmentMapEffect;

@@ -3084,6 +3084,40 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
 		}
 
+        public void SetTextureDataNV12(Texture2D Y, Texture2D UV, IntPtr ptr)
+        {
+
+            glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 1);
+            int len = Y.Width * Y.Height;
+            BindTexture(Y.texture);
+            glTexSubImage2D(
+                    GLenum.GL_TEXTURE_2D,
+                    0,
+                    0,
+                    0,
+                    Y.Width,
+                    Y.Height,
+                    GLenum.GL_ALPHA,
+                    GLenum.GL_UNSIGNED_BYTE,
+                    ptr
+                );
+
+
+            BindTexture(UV.texture);
+            glTexSubImage2D(
+                    GLenum.GL_TEXTURE_2D,
+                    0,
+                    0,
+                    0,
+                    UV.Width,
+                    UV.Height,
+                    GLenum.GL_RG,
+                    GLenum.GL_UNSIGNED_BYTE,
+                    ptr + len
+                );
+            glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 4);
+        }
+
 		public void SetTextureDataYUV(Texture2D[] textures, IntPtr ptr)
 		{
 			glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 1);

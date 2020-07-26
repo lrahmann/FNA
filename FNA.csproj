@@ -85,6 +85,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="NV12.cs" />
     <Compile Include="src\Audio\AudioCategory.cs" />
     <Compile Include="src\Audio\AudioChannels.cs" />
     <Compile Include="src\Audio\AudioEmitter.cs" />
@@ -412,12 +413,6 @@
     <Compile Include="lib\Theorafile\csharp\Theorafile.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config">
-      <Link>$(TargetFileName).config</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="src\Graphics\Effect\StockEffects\FXB\AlphaTestEffect.fxb">
       <LogicalName>Microsoft.Xna.Framework.Graphics.Effect.Resources.AlphaTestEffect.fxb</LogicalName>
     </EmbeddedResource>
@@ -438,6 +433,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Graphics\Effect\YUVToRGBA\YUVToRGBAEffect.fxb">
       <LogicalName>Microsoft.Xna.Framework.Graphics.Effect.Resources.YUVToRGBAEffect.fxb</LogicalName>
+    </EmbeddedResource>
+		<EmbeddedResource Include="src\Graphics\Effect\NV12toRGBA\NV12ToRGBAEffect.fxb">
+      <LogicalName>Microsoft.Xna.Framework.Graphics.Effect.Resources.NV12ToRGBAEffect.fxb</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

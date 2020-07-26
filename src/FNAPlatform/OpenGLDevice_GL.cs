@@ -958,7 +958,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			if (type == GLenum.GL_DEBUG_TYPE_ERROR)
 			{
 				FNALoggerEXT.LogError(err);
-				throw new InvalidOperationException(err);
+				//throw new InvalidOperationException(err);
 			}
 			FNALoggerEXT.LogWarn(err);
 		}

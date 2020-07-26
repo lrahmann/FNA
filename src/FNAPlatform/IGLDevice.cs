@@ -217,7 +217,9 @@ namespace Microsoft.Xna.Framework.Graphics
 			IntPtr data,
 			int dataLength
 		);
-		void SetTextureDataYUV(Texture2D[] textures, IntPtr ptr);
+        void SetTextureDataNV12(Texture2D Y, Texture2D UV, IntPtr ptr);
+
+        void SetTextureDataYUV(Texture2D[] textures, IntPtr ptr);
 		void GetTextureData2D(
 			IGLTexture texture,
 			SurfaceFormat format,

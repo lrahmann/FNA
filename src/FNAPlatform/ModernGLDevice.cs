@@ -2986,11 +2986,44 @@ namespace Microsoft.Xna.Framework.Graphics
 			glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 4);
 		}
 
-		#endregion
 
-		#region glGetTexImage Methods
 
-		public void GetTextureData2D(
+        public void SetTextureDataNV12(Texture2D Y, Texture2D UV, IntPtr ptr)
+        {
+
+            glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 1);
+            int len = Y.Width * Y.Height;
+
+            glTextureSubImage2D(
+                (Y.texture as OpenGLTexture).Handle,
+                0,
+                0,
+                0,
+                Y.Width,
+                Y.Height,
+                GLenum.GL_RED,
+                GLenum.GL_UNSIGNED_BYTE,
+                ptr
+            );
+            glTextureSubImage2D(
+                (UV.texture as OpenGLTexture).Handle,
+                0,
+                0,
+                0,
+                UV.Width,
+                UV.Height,
+                GLenum.GL_RED,
+                GLenum.GL_UNSIGNED_BYTE,
+                ptr + len
+            );
+            glPixelStorei(GLenum.GL_UNPACK_ALIGNMENT, 4);
+        }
+
+        #endregion
+
+        #region glGetTexImage Methods
+
+        public void GetTextureData2D(
 			IGLTexture texture,
 			SurfaceFormat format,
 			int width,

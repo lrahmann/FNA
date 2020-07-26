@@ -740,7 +740,15 @@ namespace Microsoft.Xna.Framework.Graphics
 			}); // End ForceToMainThread
 		}
 
-		public void SetTextureDataYUV(Texture2D[] textures, IntPtr ptr)
+        public void SetTextureDataNV12(Texture2D Y, Texture2D UV, IntPtr ptr)
+        {
+            ForceToMainThread(() =>
+            {
+                GLDevice.SetTextureDataNV12(Y,UV, ptr);
+            }); // End ForceToMainThread
+        }
+
+        public void SetTextureDataYUV(Texture2D[] textures, IntPtr ptr)
 		{
 			ForceToMainThread(() =>
 			{
@@ -1188,7 +1196,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			}); // End ForceToMainThread
 			return result;
 		}
-
-		#endregion
-	}
+        
+        #endregion
+    }
 }

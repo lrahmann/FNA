@@ -2158,7 +2158,7 @@ namespace Microsoft.Xna.Framework
 		#region GamePad Backend
 
 		// Controller device information
-		private static IntPtr[] INTERNAL_devices = new IntPtr[GamePad.GAMEPAD_COUNT];
+		internal static IntPtr[] INTERNAL_devices = new IntPtr[GamePad.GAMEPAD_COUNT];
 		private static Dictionary<int, int> INTERNAL_instanceList = new Dictionary<int, int>();
 		private static string[] INTERNAL_guids = GenStringArray();
 

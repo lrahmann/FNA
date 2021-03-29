@@ -24,7 +24,17 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 namespace Microsoft.Xna.Framework
 {
-	internal static class SDL2_FNAPlatform
+    public static class SDL2_Helper
+    {
+        public static SDL_GameControllerType GetGamepadType(int fnaIndex)
+        {
+            IntPtr device = SDL2_FNAPlatform.INTERNAL_devices[fnaIndex];
+            if (device == IntPtr.Zero) return SDL_GameControllerType.SDL_CONTROLLER_TYPE_UNKNOWN;
+            return SDL2.SDL.SDL_GameControllerGetType(SDL2_FNAPlatform.INTERNAL_devices[fnaIndex]);
+        }
+    }
+
+    internal static class SDL2_FNAPlatform
 	{
 		#region Static Constants
 

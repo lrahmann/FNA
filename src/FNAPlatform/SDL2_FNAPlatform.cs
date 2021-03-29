@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using static SDL2.SDL;
 #endregion
 
 namespace Microsoft.Xna.Framework
